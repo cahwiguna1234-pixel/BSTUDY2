@@ -211,6 +211,17 @@ function setAuthMessage(message, success = false) {
   $("#authMessage").classList.toggle("success", success);
 }
 
+function getAuthErrorMessage(error) {
+  const message = error?.message || "Autentikasi gagal. Silakan coba lagi.";
+  if (/failed to fetch|networkerror|load failed/i.test(message)) {
+    return "Supabase tidak dapat dijangkau. Periksa Project URL, anon key, koneksi internet, dan jalankan situs melalui localhost atau hosting.";
+  }
+  if (/invalid login credentials/i.test(message)) return "Email atau password tidak sesuai.";
+  if (/email not confirmed/i.test(message)) return "Konfirmasi email terlebih dahulu melalui pesan dari Supabase.";
+  if (/user already registered/i.test(message)) return "Email ini sudah terdaftar. Silakan masuk.";
+  return message;
+}
+
 function setAuthMode(mode) {
   authMode = mode;
   const isSignUp = mode === "signup";
@@ -261,12 +272,12 @@ async function completeLogin(user) {
 }
 
 async function initAuth() {
-  if (!Client) {
+  if (!supabaseClient) {
     $("#authConfigNote").hidden = false;
     showAuth();
     return;
   }
-  const { data: sessionData, error } = await Client.auth.getSession();
+  const { data: sessionData, error } = await supabaseClient.auth.getSession();
   if (error) setAuthMessage(error.message);
   if (sessionData?.session?.user) await completeLogin(sessionData.session.user);
   else showAuth();
@@ -305,7 +316,7 @@ async function submitAuth(event) {
       await completeLogin(result.user);
     }
   } catch (error) {
-    setAuthMessage(error.message || "Autentikasi gagal. Silakan coba lagi.");
+    setAuthMessage(getAuthErrorMessage(error));
   } finally {
     $("#authSubmit").disabled = false;
     $("#authSubmit").textContent = authMode === "signup" ? "Daftar akun" : "Masuk";
