@@ -34,7 +34,7 @@ const defaultData = {
   focusSessions: 3
 };
 
-const SUPABASE_URL = "https://yosmpjianhlvuctgnhum.supabase";
+const SUPABASE_URL = "https://yosmpjianhlvuctgnhum.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlvc21wamlhbmhsdnVjdGduaHVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyNjE1NjksImV4cCI6MjEwNTgzNzU2OX0.3ahWJ3n1LpgKCS8LIezHwwnkFxqiTeanuZNcPd_qo1E";
 const supabaseConfigured = !SUPABASE_URL.includes("YOUR_PROJECT_ID") && !SUPABASE_ANON_KEY.includes("YOUR_SUPABASE_ANON_KEY");
 const supabaseClient = supabaseConfigured && window.supabase
@@ -261,12 +261,12 @@ async function completeLogin(user) {
 }
 
 async function initAuth() {
-  if (!supabaseClient) {
+  if (!Client) {
     $("#authConfigNote").hidden = false;
     showAuth();
     return;
   }
-  const { data: sessionData, error } = await supabaseClient.auth.getSession();
+  const { data: sessionData, error } = await Client.auth.getSession();
   if (error) setAuthMessage(error.message);
   if (sessionData?.session?.user) await completeLogin(sessionData.session.user);
   else showAuth();
