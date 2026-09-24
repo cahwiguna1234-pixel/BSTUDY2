@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d3b35">
+  <title>BSTUDY — Ruang Belajar Pribadi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header" id="sidebar">
+    <div class="header-inner">
+      <a class="brand" href="#dashboard" aria-label="BSTUDY beranda">
+        <span class="brand-mark"><i></i><i></i><i></i></span>
+        <span>BSTUDY<small>STUDY SPACE</small></span>
+      </a>
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <button class="nav-item active" data-view="dashboard">Ringkasan</button>
+        <button class="nav-item" data-view="subjects">Pelajaran</button>
+        <button class="nav-item" data-view="tasks">Tugas <span class="nav-badge" id="taskBadge">3</span></button>
+        <button class="nav-item" data-view="notes">Catatan</button>
+        <button class="nav-item" data-view="flashcards">Flashcard</button>
+        <button class="nav-item" data-view="focus">Fokus</button>
+        <button class="nav-item" data-view="progress">Statistik</button>
+      </nav>
+      <div class="header-profile">
+        <button class="icon-btn" id="themeToggle" aria-label="Ubah tema">◐</button>
+        <button class="profile-card" id="profileButton"><span class="avatar" id="profileInitials">BS</span><span><strong id="accountName">Mode lokal</strong><small id="accountEmail">Belum masuk</small></span></button>
+        <button class="logout-btn" id="logoutButton" type="button" hidden>Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <div class="topbar">
+      <button class="icon-btn menu-toggle" id="menuToggle" aria-label="Buka menu">☰</button>
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input id="globalSearch" type="search" placeholder="Cari apa yang ingin kamu pelajari..." autocomplete="off">
+        <kbd>Ctrl K</kbd>
+        <div class="search-results" id="searchResults"></div>
+      </div>
+      <div class="top-actions">
+        <div class="streak-pill"><span>7</span><div><strong>Day streak</strong><small>Rekor: 12 hari</small></div></div>
+        <button class="primary-btn" data-action="quick-add"><span>＋</span> Buat baru</button>
+      </div>
+    </div>
+
+    <main>
+      <section class="view active" id="dashboardView">
+        <div class="hero-dashboard">
+          <div class="hero-copy">
+            <div class="hero-kicker"><span id="currentDate">KAMIS, 24 SEPTEMBER</span><i></i><span>SEMESTER GANJIL</span></div>
+            <h1>Rencanakan.<br><em>Fokus.</em> Tuntaskan.</h1>
+            <p>Semua aktivitas belajarmu dalam satu ruang yang rapi. Hari ini kamu punya <strong>3 target utama</strong>.</p>
+            <div class="hero-actions">
+              <button class="accent-btn" data-view-target="focus">Mulai sesi fokus <span>↗</span></button>
+              <button class="hero-link" data-view-target="tasks">Lihat rencana hari ini</button>
+            </div>
+          </div>
+          <div class="hero-orbit" aria-hidden="true">
+            <div class="orbit-ring"><span class="orbit-label label-one">NOTE</span><span class="orbit-label label-two">QUIZ</span><span class="orbit-label label-three">FOCUS</span></div>
+            <div class="orbit-score"><strong>78</strong><span>WEEKLY<br>SCORE</span></div>
+          </div>
+        </div>
+
+        <div class="ticker-row">
+          <span class="ticker-title">MINGGU INI</span>
+          <div><strong id="studyTimeStat">12j 40m</strong><span>Waktu belajar</span></div>
+          <div><strong id="completedStat">18</strong><span>Tugas selesai</span></div>
+          <div><strong>88</strong><span>Nilai rata-rata</span></div>
+          <div><strong>7 hari</strong><span>Konsisten</span></div>
+          <button class="circle-arrow" data-view-target="progress" aria-label="Lihat statistik">→</button>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel now-learning">
+            <div class="section-label"><span>01</span><p>SEDANG DIPELAJARI</p></div>
+            <div class="course-card">
+              <div class="course-visual math-visual"><span class="grid-equation">∫</span><div class="play-button">▶</div><small>CHAPTER 04</small></div>
+              <div class="course-info">
+                <span class="subject-tag math">MATEMATIKA</span>
+                <h2>Kalkulus:<br>Integral Tentu</h2>
+                <p>Video 6 dari 10 · 24 menit tersisa</p>
+                <div class="progress-line"><span style="width:65%"></span></div>
+                <div class="course-meta"><span>PROGRES</span><strong>65%</strong></div>
+                <button class="dark-btn wide" data-action="continue-course">Lanjutkan materi <span>→</span></button>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel today-plan">
+            <div class="panel-heading">
+              <div class="section-label"><span>02</span><p>AGENDA HARI INI</p></div>
+              <button class="round-btn" data-action="add-schedule" aria-label="Tambah jadwal">＋</button>
+            </div>
+            <div class="schedule-list" id="scheduleList"></div>
+            <button class="text-btn" data-view-target="tasks">Buka kalender lengkap →</button>
+          </section>
+        </div>
+
+        <div class="dashboard-grid lower">
+          <section class="panel task-panel">
+            <div class="panel-heading"><div class="section-label"><span>03</span><p>PRIORITAS TERDEKAT</p></div><button class="text-btn" data-view-target="tasks">Semua tugas →</button></div>
+            <div class="task-list" id="dashboardTaskList"></div>
+          </section>
+          <section class="focus-mini">
+            <div class="focus-grid"></div>
+            <div class="focus-copy"><span class="mini-label">DEEP WORK</span><h2>25 menit<br>untuk maju.</h2><p>Matikan distraksi. Satu sesi, satu tujuan.</p><button class="accent-btn" data-view-target="focus">Mulai sekarang</button></div>
+            <div class="mini-timer"><strong>25</strong><span>MIN</span></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="subjectsView">
+        <div class="page-heading"><div><span class="page-number">01 / COLLECTION</span><h1>Pelajaran saya</h1><p>Koleksi materi aktif dan arsip pembelajaranmu.</p></div><button class="primary-btn" data-action="add-subject">＋ Pelajaran baru</button></div>
+        <div class="filter-row"><button class="chip active" data-subject-filter="all">Semua</button><button class="chip" data-subject-filter="active">Sedang dipelajari</button><button class="chip" data-subject-filter="completed">Selesai</button></div>
+        <div class="subject-grid" id="subjectGrid"></div>
+      </section>
+
+      <section class="view" id="tasksView">
+        <div class="page-heading"><div><span class="page-number">02 / PLANNER</span><h1>Tugas & agenda</h1><p>Ubah rencana besar menjadi langkah yang bisa diselesaikan.</p></div><button class="primary-btn" data-action="add-task">＋ Tambah tugas</button></div>
+        <div class="task-summary"><div><span>SEMUA</span><strong id="allTaskCount">0</strong></div><div><span>AKTIF</span><strong id="pendingTaskCount">0</strong></div><div><span>SELESAI</span><strong id="doneTaskCount">0</strong></div></div>
+        <div class="panel task-manager">
+          <div class="filter-row"><button class="chip active" data-task-filter="all">Semua</button><button class="chip" data-task-filter="pending">Aktif</button><button class="chip" data-task-filter="done">Selesai</button></div>
+          <div class="task-list expanded" id="fullTaskList"></div>
+        </div>
+      </section>
+
+      <section class="view" id="notesView">
+        <div class="page-heading"><div><span class="page-number">03 / KNOWLEDGE</span><h1>Catatan belajar</h1><p>Ide dan rangkuman penting yang tidak boleh hilang.</p></div><button class="primary-btn" data-action="add-note">＋ Catatan baru</button></div>
+        <div class="notes-grid" id="notesGrid"></div>
+      </section>
+
+      <section class="view" id="flashcardsView">
+        <div class="page-heading"><div><span class="page-number">04 / ACTIVE RECALL</span><h1>Flashcard</h1><p>Latih ingatan sedikit demi sedikit, setiap hari.</p></div><button class="primary-btn" data-action="add-flashcard">＋ Buat kartu</button></div>
+        <div class="flashcard-layout">
+          <div class="deck-list panel" id="deckList"></div>
+          <div class="flashcard-stage"><p id="cardCounter">Kartu 1 dari 4</p><button class="flashcard" id="flashcard" aria-label="Balik flashcard"><span class="card-face card-front"><small>PERTANYAAN</small><strong id="flashQuestion"></strong><em>Ketuk untuk membuka jawaban</em></span><span class="card-face card-back"><small>JAWABAN</small><strong id="flashAnswer"></strong><em>Seberapa yakin kamu?</em></span></button><div class="card-controls"><button class="ghost-btn" id="prevCard">← Sebelumnya</button><button class="rating-btn hard" data-rating="hard">Ulangi</button><button class="rating-btn easy" data-rating="easy">Dikuasai</button><button class="ghost-btn" id="nextCard">Berikutnya →</button></div></div>
+        </div>
+      </section>
+
+      <section class="view" id="focusView">
+        <div class="focus-page">
+          <span class="page-number">05 / FOCUS ROOM</span><h1>Masuk ke zona fokus.</h1><p>Pilih durasi, tentukan satu tugas, lalu mulai.</p>
+          <div class="mode-tabs"><button class="active" data-minutes="25">Fokus</button><button data-minutes="5">Jeda singkat</button><button data-minutes="15">Jeda panjang</button></div>
+          <div class="timer-ring" id="timerRing"><div><strong id="timerDisplay">25:00</strong><span id="timerStatus">SIAP DIMULAI</span></div></div>
+          <div class="timer-actions"><button class="icon-btn" id="resetTimer" aria-label="Atur ulang">↻</button><button class="primary-btn timer-main" id="startTimer">Mulai fokus</button><button class="icon-btn" id="skipTimer" aria-label="Lewati">»</button></div>
+          <label class="focus-task-select">TARGET SESI <select id="focusTaskSelect"></select></label>
+          <div class="focus-session-stats"><div><span>SESI HARI INI</span><strong id="sessionCount">3</strong></div><div><span>MENIT FOKUS</span><strong id="focusMinutes">75</strong></div><div><span>REKOR TERBAIK</span><strong>12</strong></div></div>
+        </div>
+      </section>
+
+      <section class="view" id="progressView">
+        <div class="page-heading"><div><span class="page-number">06 / INSIGHTS</span><h1>Statistik belajar</h1><p>Baca polamu, pertahankan yang bekerja.</p></div><select class="period-select"><option>7 hari terakhir</option><option>30 hari terakhir</option><option>Semester ini</option></select></div>
+        <div class="progress-summary"><article><span>TOTAL BELAJAR</span><strong>12j 40m</strong><small>↑ 18% minggu ini</small></article><article><span>SESI FOKUS</span><strong>28</strong><small>Rata-rata 27 menit</small></article><article><span>MATERI SELESAI</span><strong>14</strong><small>↑ 3 dari minggu lalu</small></article><article><span>KONSISTENSI</span><strong>92%</strong><small>Sangat baik</small></article></div>
+        <div class="analytics-grid"><section class="panel chart-panel"><div class="panel-heading"><div><h2>Ritme mingguan</h2><p>Durasi belajar per hari</p></div><span class="legend-dot">Waktu belajar</span></div><div class="bar-chart" id="barChart"></div></section><section class="panel subject-progress"><div class="panel-heading"><div><h2>Capaian pelajaran</h2><p>Materi yang telah diselesaikan</p></div></div><div id="subjectProgressList"></div></section></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="auth-overlay" id="authOverlay" aria-hidden="false">
+    <section class="auth-card" aria-labelledby="authTitle">
+      <div class="auth-visual">
+        <a class="auth-brand" href="#"><span class="brand-mark"><i></i><i></i><i></i></span><strong>BSTUDY</strong></a>
+        <div><span class="page-number">YOUR PERSONAL STUDY OS</span><h2>Belajar lebih terarah.<br>Progres tersimpan.</h2><p>Masuk untuk menyinkronkan tugas, catatan, flashcard, dan progres belajarmu di semua perangkat.</p></div>
+        <div class="auth-proof"><strong>7</strong><span>hari konsisten<br>dimulai dari satu sesi.</span></div>
+      </div>
+      <div class="auth-form-wrap">
+        <button class="auth-local" id="localModeButton" type="button">Lanjut tanpa akun</button>
+        <span class="page-number">WELCOME TO BSTUDY</span>
+        <h1 id="authTitle">Masuk ke akunmu</h1>
+        <p id="authSubtitle">Lanjutkan perjalanan belajar dari tempat terakhir.</p>
+        <form id="authForm">
+          <div class="form-group auth-name-field" id="authNameField" hidden><label for="authName">Nama lengkap</label><input id="authName" name="name" type="text" autocomplete="name" placeholder="Nama kamu"></div>
+          <div class="form-group"><label for="authEmail">Email</label><input id="authEmail" name="email" type="email" autocomplete="email" required placeholder="nama@email.com"></div>
+          <div class="form-group"><label for="authPassword">Password</label><div class="password-field"><input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="6" required placeholder="Minimal 6 karakter"><button id="togglePassword" type="button" aria-label="Tampilkan password">Lihat</button></div></div>
+          <p class="auth-message" id="authMessage" role="alert"></p>
+          <button class="primary-btn wide auth-submit" id="authSubmit" type="submit">Masuk</button>
+        </form>
+        <p class="auth-switch"><span id="authSwitchPrompt">Belum punya akun?</span> <button id="authSwitch" type="button">Daftar sekarang</button></p>
+        <p class="auth-config-note" id="authConfigNote" hidden>Supabase belum dikonfigurasi. Isi URL dan anon key di <code>script.js</code>, atau gunakan mode lokal.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="modal-close" id="modalClose" aria-label="Tutup">×</button><p class="eyebrow" id="modalEyebrow">TAMBAH BARU</p><h2 id="modalTitle">Tambah tugas</h2><form id="modalForm"></form></div></div>
+  <div class="toast" id="toast" role="status"></div>
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js"></script>
+</body>
+</html>
