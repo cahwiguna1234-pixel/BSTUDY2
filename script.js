@@ -153,11 +153,12 @@ function renderSchedules() {
 
 function renderSubjects() {
   const subjects = data.subjects.filter(item => currentSubjectFilter === "all" || item.status === currentSubjectFilter);
-  $("#subjectGrid").innerHTML = subjects.map(item => `<article class="panel subject-card" style="--card-color:${item.color}">
+  $("#subjectGrid").innerHTML = subjects.map(item => `<article class="panel subject-card" style="--card-color:${item.color}" data-id="${item.id}">
     <div class="subject-cover"><small>${item.status === "completed" ? "SELESAI" : "SEDANG DIPELAJARI"}</small><span class="subject-symbol">${escapeHtml(item.symbol)}</span></div>
     <div class="subject-content"><h3>${escapeHtml(item.name)}</h3><p>${escapeHtml(item.description)}</p>
       <div class="progress-line"><span style="width:${item.progress}%;background:${item.color}"></span></div>
       <div class="subject-meta"><span>${item.progress}% selesai</span><span>${item.lessons} materi</span></div>
+      <button class="subject-delete" aria-label="Hapus pelajaran ${escapeHtml(item.name)}">Hapus pelajaran</button>
     </div>
   </article>`).join("") || emptyState("Belum ada pelajaran pada kategori ini.");
 }
@@ -171,7 +172,20 @@ function renderNotes() {
 }
 
 function renderFlashcard() {
-  if (!data.flashcards.length) return;
+  const controls = $(".card-controls");
+  const deleteBtn = $("#deleteCard");
+  if (!data.flashcards.length) {
+    $("#flashQuestion").textContent = "Belum ada flashcard";
+    $("#flashAnswer").textContent = "Buat flashcard baru untuk mulai berlatih.";
+    $("#cardCounter").textContent = "0 kartu";
+    $("#flashcard").classList.remove("flipped");
+    if (controls) controls.style.display = "none";
+    if (deleteBtn) deleteBtn.style.display = "none";
+    $("#deckList").innerHTML = `<h3>Koleksi kartu</h3>${emptyState("Belum ada kartu. Buat flashcard pertamamu.")}`;
+    return;
+  }
+  if (controls) controls.style.display = "";
+  if (deleteBtn) deleteBtn.style.display = "";
   currentCard = Math.min(currentCard, data.flashcards.length - 1);
   const card = data.flashcards[currentCard];
   $("#flashQuestion").textContent = card.question;
@@ -182,6 +196,15 @@ function renderFlashcard() {
     <button class="deck-item active"><strong>Campuran pelajaran</strong><span>${data.flashcards.length} kartu · Dipelajari hari ini</span></button>
     <button class="deck-item"><strong>Matematika</strong><span>12 kartu</span></button>
     <button class="deck-item"><strong>Biologi</strong><span>8 kartu</span></button>`;
+}
+
+function deleteCurrentFlashcard() {
+  if (!data.flashcards.length) return;
+  data.flashcards.splice(currentCard, 1);
+  if (currentCard >= data.flashcards.length) currentCard = Math.max(0, data.flashcards.length - 1);
+  saveData();
+  renderFlashcard();
+  showToast("Flashcard dihapus.");
 }
 
 function renderProgress() {
@@ -574,6 +597,17 @@ $("#notesGrid").addEventListener("click", event => {
   showToast("Catatan dihapus.");
 });
 
+$("#subjectGrid").addEventListener("click", event => {
+  const button = event.target.closest(".subject-delete");
+  if (!button) return;
+  const id = Number(button.closest(".subject-card").dataset.id);
+  data.subjects = data.subjects.filter(subject => subject.id !== id);
+  saveData();
+  renderSubjects();
+  renderProgress();
+  showToast("Pelajaran dihapus.");
+});
+
 $("#flashcard").addEventListener("click", () => $("#flashcard").classList.toggle("flipped"));
 $("#prevCard").addEventListener("click", () => { currentCard = (currentCard - 1 + data.flashcards.length) % data.flashcards.length; renderFlashcard(); });
 $("#nextCard").addEventListener("click", () => { currentCard = (currentCard + 1) % data.flashcards.length; renderFlashcard(); });
@@ -582,6 +616,7 @@ $$('[data-rating]').forEach(button => button.addEventListener("click", () => {
   renderFlashcard();
   showToast(button.dataset.rating === "easy" ? "Bagus! Kartu ditandai mudah." : "Kartu ini akan diulang lebih sering.");
 }));
+$("#deleteCard").addEventListener("click", deleteCurrentFlashcard);
 
 $$('[data-action]').forEach(button => button.addEventListener("click", () => {
   const action = button.dataset.action;
