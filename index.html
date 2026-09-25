@@ -20,6 +20,7 @@
       <nav class="main-nav" aria-label="Navigasi utama">
         <button class="nav-item active" data-view="dashboard">Ringkasan</button>
         <button class="nav-item" data-view="subjects">Pelajaran</button>
+        <button class="nav-item" data-view="timetable">Jadwal</button>
         <button class="nav-item" data-view="tasks">Tugas <span class="nav-badge" id="taskBadge">3</span></button>
         <button class="nav-item" data-view="notes">Catatan</button>
         <button class="nav-item" data-view="flashcards">Flashcard</button>
@@ -121,8 +122,18 @@
         <div class="subject-grid" id="subjectGrid"></div>
       </section>
 
+      <section class="view" id="timetableView">
+        <div class="page-heading"><div><span class="page-number">02 / TIMETABLE</span><h1>Jadwal pelajaran</h1><p>Susunan kelas mingguan dari Senin sampai Minggu.</p></div><button class="primary-btn" data-action="add-timetable">＋ Tambah jadwal</button></div>
+        <div class="task-summary" id="timetableSummary">
+          <div><span>TOTAL KELAS</span><strong id="weekTotalCount">0</strong></div>
+          <div><span>HARI INI</span><strong id="weekTodayCount">0</strong></div>
+          <div><span>HARI TERSIBUK</span><strong id="weekBusiestDay">-</strong></div>
+        </div>
+        <div class="timetable-grid" id="timetableGrid"></div>
+      </section>
+
       <section class="view" id="tasksView">
-        <div class="page-heading"><div><span class="page-number">02 / PLANNER</span><h1>Tugas & agenda</h1><p>Ubah rencana besar menjadi langkah yang bisa diselesaikan.</p></div><button class="primary-btn" data-action="add-task">＋ Tambah tugas</button></div>
+        <div class="page-heading"><div><span class="page-number">03 / PLANNER</span><h1>Tugas & agenda</h1><p>Ubah rencana besar menjadi langkah yang bisa diselesaikan.</p></div><button class="primary-btn" data-action="add-task">＋ Tambah tugas</button></div>
         <div class="task-summary"><div><span>SEMUA</span><strong id="allTaskCount">0</strong></div><div><span>AKTIF</span><strong id="pendingTaskCount">0</strong></div><div><span>SELESAI</span><strong id="doneTaskCount">0</strong></div></div>
         <div class="panel task-manager">
           <div class="filter-row"><button class="chip active" data-task-filter="all">Semua</button><button class="chip" data-task-filter="pending">Aktif</button><button class="chip" data-task-filter="done">Selesai</button></div>
@@ -131,12 +142,12 @@
       </section>
 
       <section class="view" id="notesView">
-        <div class="page-heading"><div><span class="page-number">03 / KNOWLEDGE</span><h1>Catatan belajar</h1><p>Ide dan rangkuman penting yang tidak boleh hilang.</p></div><button class="primary-btn" data-action="add-note">＋ Catatan baru</button></div>
+        <div class="page-heading"><div><span class="page-number">04 / KNOWLEDGE</span><h1>Catatan belajar</h1><p>Ide dan rangkuman penting yang tidak boleh hilang.</p></div><button class="primary-btn" data-action="add-note">＋ Catatan baru</button></div>
         <div class="notes-grid" id="notesGrid"></div>
       </section>
 
       <section class="view" id="flashcardsView">
-        <div class="page-heading"><div><span class="page-number">04 / ACTIVE RECALL</span><h1>Flashcard</h1><p>Latih ingatan sedikit demi sedikit, setiap hari.</p></div><button class="primary-btn" data-action="add-flashcard">＋ Buat kartu</button></div>
+        <div class="page-heading"><div><span class="page-number">05 / ACTIVE RECALL</span><h1>Flashcard</h1><p>Latih ingatan sedikit demi sedikit, setiap hari.</p></div><button class="primary-btn" data-action="add-flashcard">＋ Buat kartu</button></div>
         <div class="flashcard-layout">
           <div class="deck-list panel" id="deckList"></div>
           <div class="flashcard-stage"><p id="cardCounter">Kartu 1 dari 4</p><button class="flashcard" id="flashcard" aria-label="Balik flashcard"><span class="card-face card-front"><small>PERTANYAAN</small><strong id="flashQuestion"></strong><em>Ketuk untuk membuka jawaban</em></span><span class="card-face card-back"><small>JAWABAN</small><strong id="flashAnswer"></strong><em>Seberapa yakin kamu?</em></span></button><div class="card-controls"><button class="ghost-btn" id="prevCard">← Sebelumnya</button><button class="rating-btn hard" data-rating="hard">Ulangi</button><button class="rating-btn easy" data-rating="easy">Dikuasai</button><button class="ghost-btn" id="nextCard">Berikutnya →</button></div><button class="flashcard-delete" id="deleteCard" type="button">Hapus kartu ini</button></div>
@@ -145,7 +156,7 @@
 
       <section class="view" id="focusView">
         <div class="focus-page">
-          <span class="page-number">05 / FOCUS ROOM</span><h1>Masuk ke zona fokus.</h1><p>Pilih durasi, tentukan satu tugas, lalu mulai.</p>
+          <span class="page-number">06 / FOCUS ROOM</span><h1>Masuk ke zona fokus.</h1><p>Pilih durasi, tentukan satu tugas, lalu mulai.</p>
           <div class="mode-tabs"><button class="active" data-minutes="25">Fokus</button><button data-minutes="5">Jeda singkat</button><button data-minutes="15">Jeda panjang</button></div>
           <div class="timer-ring" id="timerRing"><div><strong id="timerDisplay">25:00</strong><span id="timerStatus">SIAP DIMULAI</span></div></div>
           <div class="timer-actions"><button class="icon-btn" id="resetTimer" aria-label="Atur ulang">↻</button><button class="primary-btn timer-main" id="startTimer">Mulai fokus</button><button class="icon-btn" id="skipTimer" aria-label="Lewati">»</button></div>
@@ -155,7 +166,7 @@
       </section>
 
       <section class="view" id="progressView">
-        <div class="page-heading"><div><span class="page-number">06 / INSIGHTS</span><h1>Statistik belajar</h1><p>Baca polamu, pertahankan yang bekerja.</p></div><select class="period-select"><option>7 hari terakhir</option><option>30 hari terakhir</option><option>Semester ini</option></select></div>
+        <div class="page-heading"><div><span class="page-number">07 / INSIGHTS</span><h1>Statistik belajar</h1><p>Baca polamu, pertahankan yang bekerja.</p></div><select class="period-select"><option>7 hari terakhir</option><option>30 hari terakhir</option><option>Semester ini</option></select></div>
         <div class="progress-summary"><article><span>TOTAL BELAJAR</span><strong>12j 40m</strong><small>↑ 18% minggu ini</small></article><article><span>SESI FOKUS</span><strong>28</strong><small>Rata-rata 27 menit</small></article><article><span>MATERI SELESAI</span><strong>14</strong><small>↑ 3 dari minggu lalu</small></article><article><span>KONSISTENSI</span><strong>92%</strong><small>Sangat baik</small></article></div>
         <div class="analytics-grid"><section class="panel chart-panel"><div class="panel-heading"><div><h2>Ritme mingguan</h2><p>Durasi belajar per hari</p></div><span class="legend-dot">Waktu belajar</span></div><div class="bar-chart" id="barChart"></div></section><section class="panel subject-progress"><div class="panel-heading"><div><h2>Capaian pelajaran</h2><p>Materi yang telah diselesaikan</p></div></div><div id="subjectProgressList"></div></section></div>
       </section>
