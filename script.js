@@ -24,11 +24,27 @@ const defaultData = {
     { id: 3, title: "Industrial Revolution", subject: "Sejarah", content: "Revolusi Industri bermula di Inggris dan mengubah sistem produksi, urbanisasi, serta hubungan sosial masyarakat.", date: "21 Sep 2026", color: "#e58c4d" },
     { id: 4, title: "Argumentative Essay", subject: "Bahasa Inggris", content: "Struktur utama: thesis statement, arguments with evidence, counterargument, dan conclusion.", date: "19 Sep 2026", color: "#477fcb" }
   ],
+  classSchedule: [
+    { id: 1, day: "Senin", time: "07:00", duration: "90 mnt", subject: "Matematika", room: "Kelas 10A" },
+    { id: 2, day: "Senin", time: "09:30", duration: "60 mnt", subject: "Biologi", room: "Lab IPA" },
+    { id: 3, day: "Selasa", time: "08:00", duration: "90 mnt", subject: "Bahasa Inggris", room: "Kelas 10A" },
+    { id: 4, day: "Rabu", time: "07:00", duration: "60 mnt", subject: "Sejarah", room: "Kelas 10A" },
+    { id: 5, day: "Kamis", time: "10:00", duration: "90 mnt", subject: "Fisika", room: "Lab Fisika" },
+    { id: 6, day: "Jumat", time: "08:00", duration: "60 mnt", subject: "Kimia", room: "Lab Kimia" }
+  ],
   flashcards: [
     { question: "Apa yang dimaksud dengan integral tentu?", answer: "Integral dengan batas atas dan bawah yang menghasilkan nilai numerik berupa luas bersih di bawah kurva." },
     { question: "Apa rumus dasar integral pangkat?", answer: "∫xⁿ dx = xⁿ⁺¹/(n+1) + C, dengan syarat n ≠ -1." },
     { question: "Apa fungsi utama mitokondria?", answer: "Menghasilkan energi dalam bentuk ATP melalui respirasi seluler." },
     { question: "Kapan Revolusi Industri pertama dimulai?", answer: "Sekitar tahun 1760 di Inggris, kemudian menyebar ke Eropa dan Amerika." }
+  ],
+  timetable: [
+    { id: 1, day: "Senin", time: "07:00", duration: "90 mnt", subject: "Matematika", room: "Kelas 10A" },
+    { id: 2, day: "Senin", time: "10:00", duration: "60 mnt", subject: "Bahasa Inggris", room: "Kelas 10A" },
+    { id: 3, day: "Selasa", time: "08:00", duration: "90 mnt", subject: "Biologi", room: "Lab IPA" },
+    { id: 4, day: "Rabu", time: "07:00", duration: "60 mnt", subject: "Sejarah", room: "Kelas 10A" },
+    { id: 5, day: "Kamis", time: "09:00", duration: "90 mnt", subject: "Kimia", room: "Lab Kimia" },
+    { id: 6, day: "Jumat", time: "07:00", duration: "60 mnt", subject: "Matematika", room: "Kelas 10A" }
   ],
   focusSeconds: 75 * 60,
   focusSessions: 3
@@ -56,6 +72,7 @@ let timerSeconds = 25 * 60;
 let timerTotal = timerSeconds;
 let timerInterval = null;
 let modalType = "task";
+const WEEK_DAYS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 
 function getStorageKey() {
   return currentUser ? `bstudy-data:${currentUser.id}` : "bstudy-data:local";
@@ -161,6 +178,38 @@ function renderSubjects() {
       <button class="subject-delete" aria-label="Hapus pelajaran ${escapeHtml(item.name)}">Hapus pelajaran</button>
     </div>
   </article>`).join("") || emptyState("Belum ada pelajaran pada kategori ini.");
+}
+
+function todayDayName() {
+  return WEEK_DAYS[(new Date().getDay() + 6) % 7];
+}
+
+function renderTimetable() {
+  const today = todayDayName();
+  $("#timetableGrid").innerHTML = WEEK_DAYS.map(day => {
+    const items = data.timetable.filter(item => item.day === day).sort((a, b) => a.time.localeCompare(b.time));
+    const body = items.map(item => {
+      const subject = data.subjects.find(s => s.name === item.subject);
+      const color = subject ? subject.color : "#6658eb";
+      return `<div class="class-card" style="--card-color:${color}" data-id="${item.id}">
+        <button class="class-delete" aria-label="Hapus jadwal ${escapeHtml(item.subject)}">×</button>
+        <strong>${escapeHtml(item.subject)}</strong>
+        <small>${escapeHtml(item.time)} · ${escapeHtml(item.duration)}${item.room ? " · " + escapeHtml(item.room) : ""}</small>
+      </div>`;
+    }).join("") || `<p class="day-empty">Belum ada kelas</p>`;
+    return `<div class="day-column ${day === today ? "is-today" : ""}">
+      <div class="day-header"><strong>${day}</strong><span>${items.length} kelas</span></div>
+      <div class="day-body">${body}</div>
+    </div>`;
+  }).join("");
+  const todayCount = data.timetable.filter(item => item.day === today).length;
+  const busiest = WEEK_DAYS.reduce((best, day) => {
+    const count = data.timetable.filter(item => item.day === day).length;
+    return count > best.count ? { day, count } : best;
+  }, { day: "-", count: 0 });
+  $("#weekTotalCount").textContent = data.timetable.length;
+  $("#weekTodayCount").textContent = todayCount;
+  $("#weekBusiestDay").textContent = busiest.count ? busiest.day : "-";
 }
 
 function renderNotes() {
@@ -389,6 +438,13 @@ function openModal(type) {
       title: "Buat flashcard",
       fields: `<div class="form-group"><label for="itemQuestion">Pertanyaan</label><textarea id="itemQuestion" name="question" required placeholder="Tulis pertanyaan..."></textarea></div>
         <div class="form-group"><label for="itemAnswer">Jawaban</label><textarea id="itemAnswer" name="answer" required placeholder="Tulis jawaban ringkas..."></textarea></div>`
+    },
+    timetable: {
+      eyebrow: "JADWAL MINGGUAN",
+      title: "Tambah jadwal pelajaran",
+      fields: `<div class="form-group"><label for="itemSubject">Pelajaran</label><input id="itemSubject" name="subject" required placeholder="Matematika" list="subjectOptions"><datalist id="subjectOptions">${data.subjects.map(s => `<option value="${escapeHtml(s.name)}"></option>`).join("")}</datalist></div>
+        <div class="form-row"><div class="form-group"><label for="itemDay">Hari</label><select id="itemDay" name="day">${WEEK_DAYS.map(day => `<option>${day}</option>`).join("")}</select></div><div class="form-group"><label for="itemTime">Jam mulai</label><input id="itemTime" name="time" type="time" required></div></div>
+        <div class="form-row"><div class="form-group"><label for="itemDuration">Durasi</label><select id="itemDuration" name="duration"><option>25 mnt</option><option>45 mnt</option><option selected>60 mnt</option><option>90 mnt</option><option>120 mnt</option></select></div><div class="form-group"><label for="itemRoom">Ruang (opsional)</label><input id="itemRoom" name="room" placeholder="Kelas 10A"></div></div>`
     }
   };
   const config = configurations[type];
@@ -415,6 +471,7 @@ function submitModal(event) {
   if (modalType === "subject") data.subjects.unshift({ id: nextId, name: form.get("title"), description: form.get("content"), progress: 0, lessons: 0, color: "#6658eb", symbol: form.get("symbol"), status: "active" });
   if (modalType === "schedule") data.schedules.push({ id: nextId, title: form.get("title"), subject: form.get("subject"), time: form.get("time"), duration: form.get("duration") });
   if (modalType === "flashcard") data.flashcards.push({ question: form.get("question"), answer: form.get("answer") });
+  if (modalType === "timetable") data.timetable.push({ id: nextId, day: form.get("day"), time: form.get("time"), duration: form.get("duration"), subject: form.get("subject"), room: form.get("room") || "" });
   saveData();
   renderAll();
   closeModal();
@@ -439,7 +496,8 @@ function setupSearch() {
     const items = [
       ...data.tasks.map(item => ({ title: item.title, meta: `Tugas · ${item.subject}`, view: "tasks" })),
       ...data.notes.map(item => ({ title: item.title, meta: `Catatan · ${item.subject}`, view: "notes" })),
-      ...data.subjects.map(item => ({ title: item.name, meta: "Pelajaran", view: "subjects" }))
+      ...data.subjects.map(item => ({ title: item.name, meta: "Pelajaran", view: "subjects" })),
+      ...data.timetable.map(item => ({ title: item.subject, meta: `Jadwal · ${item.day}, ${item.time}`, view: "timetable" }))
     ].filter(item => `${item.title} ${item.meta}`.toLowerCase().includes(query)).slice(0, 7);
     results.innerHTML = items.map(item => `<button class="search-result" data-result-view="${item.view}"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.meta)}</span></button>`).join("") || emptyState("Tidak ada hasil yang ditemukan.");
     results.classList.add("open");
@@ -518,6 +576,7 @@ function renderAll() {
   renderTasks();
   renderSchedules();
   renderSubjects();
+  renderTimetable();
   renderNotes();
   renderFlashcard();
   renderProgress();
@@ -608,6 +667,16 @@ $("#subjectGrid").addEventListener("click", event => {
   showToast("Pelajaran dihapus.");
 });
 
+$("#timetableGrid").addEventListener("click", event => {
+  const button = event.target.closest(".class-delete");
+  if (!button) return;
+  const id = Number(button.closest(".class-card").dataset.id);
+  data.timetable = data.timetable.filter(item => item.id !== id);
+  saveData();
+  renderTimetable();
+  showToast("Jadwal dihapus.");
+});
+
 $("#flashcard").addEventListener("click", () => $("#flashcard").classList.toggle("flipped"));
 $("#prevCard").addEventListener("click", () => { currentCard = (currentCard - 1 + data.flashcards.length) % data.flashcards.length; renderFlashcard(); });
 $("#nextCard").addEventListener("click", () => { currentCard = (currentCard + 1) % data.flashcards.length; renderFlashcard(); });
@@ -625,6 +694,7 @@ $$('[data-action]').forEach(button => button.addEventListener("click", () => {
   if (action === "add-subject") openModal("subject");
   if (action === "add-schedule") openModal("schedule");
   if (action === "add-flashcard") openModal("flashcard");
+  if (action === "add-timetable") openModal("timetable");
   if (action === "continue-course") { navigate("focus"); showToast("Sesi Kalkulus siap dimulai."); }
 }));
 
